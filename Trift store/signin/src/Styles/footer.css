@@ -1,0 +1,113 @@
+.footer_main_dic{
+    margin-top: 50px;
+}
+.looking-for-something{
+    display: flex;
+    flex-direction: column;
+    /* border: 1px solid red; */
+    padding: 40px;
+    text-align: center;
+    /* border-bottom: 1px black solid; */
+    background-color: #EEF0F4;
+}
+
+.looking-for-something #categ{
+    display: flex;
+    flex-direction: row;
+    margin-top: 20px;
+    justify-content: center;
+}
+
+#categ p{
+    cursor: pointer;
+}
+
+.touch{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding-top: 20px;
+    background-color: #EEF0F4;
+}
+
+#email{
+    margin-right: 100px;
+}
+
+#email p{
+    margin-bottom: 20px;
+}
+
+#mail{
+    font-weight: 500;
+}
+
+#e-address{
+    font-weight: bold;
+    display: flex;
+}
+
+#e-address button{
+    width: 120px;
+    border-radius: 5px;
+    background-color: #0B5052;
+    color: white;
+}
+
+#e-address input{
+    height: 40px;
+    border-radius: 10px;
+    width: 420px;
+    padding-left: 10px;
+    margin-right: 10px;
+}
+
+#e-address input::placeholder{
+    color: grey;
+}
+
+.touch{
+    padding-bottom: 40px;
+}
+
+hr{
+    width: 80vw;
+    /* align-self: center;
+    text-align: center; */
+    margin-left: 100px;
+}
+
+.footer{
+    display: flex;
+    justify-content: space-around;
+    /* justify-content: center; */
+    align-items: center;
+    background-color: #EEF0F4;
+    height: 100%;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+#right-divs{
+    display: flex;
+    justify-content: space-between;
+    /* border: 1px solid red; */
+    width: 550px; 
+}
+
+#ad{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#ad img{
+    /* border: 1px solid black; */
+    height: 200px; 
+}
+
+#ad h3{
+    position: relative;
+    bottom: 40px; 
+}

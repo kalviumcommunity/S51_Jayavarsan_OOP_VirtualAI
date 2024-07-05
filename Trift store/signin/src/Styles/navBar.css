@@ -1,0 +1,131 @@
+.navbar1 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ECF0F4;
+  font-size: 13px;
+  font-weight: light;
+  height: 40px;
+}
+
+#left-element {
+  display: flex;
+  margin-left: 20px;
+}
+
+#left-element a {
+  margin-right: 20px;
+  cursor: pointer;
+}
+
+#right-elements {
+  display: flex;
+  margin-right: 40px;
+}
+
+#right-elements a {
+  display: flex;
+  align-items: center;
+  margin-left: 30px;
+  cursor: pointer;
+}
+
+#right-elements img {
+  width: 15px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.navbar2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #0B5052;
+  padding: 20px;
+  color: #fff;
+}
+
+.navbar2 img {
+  width: 30px;
+  margin-right: 10px; 
+}
+
+#directs {
+  display: flex;
+  flex-direction: row;
+}
+
+#directs p {
+  width: fit-content;
+  cursor: pointer;
+  margin-right: 10px;
+  position: relative;
+}
+
+#directs img {
+  width: 10px;
+}
+
+#searchbar {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+  padding: 10px;
+  padding-left: 30px;
+}
+
+#all-link {
+  cursor: pointer;
+  color: black;
+  width: 30px;
+}
+
+input[type="text"] {
+  border: none;
+  outline: none;
+  width: 30vw;
+  padding: 5px;
+  background-color: transparent;
+}
+#searchbar p{
+  color: black;
+}
+
+#search-button {
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  background-color: #FF9E20;
+  border: none;
+  border-radius: 5px;
+}
+
+#search-button img{
+  width: 20px;
+  margin-left: 10px;
+}
+
+.search{
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+#sign-in{
+  color: white;
+  cursor: pointer;
+  border: none;
+  padding: 5px 10px;
+}
+
+#cart{
+  width: 20px;
+  cursor: pointer;
+}
+
+#fav{
+  width: 20px;
+  cursor: pointer;
+}
