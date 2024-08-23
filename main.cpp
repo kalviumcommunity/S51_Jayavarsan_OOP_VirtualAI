@@ -2,18 +2,20 @@
 #include <vector>
 #include <string>
 #include <ctime>
-#include <algorithm> 
+#include <algorithm>
 
 using namespace std;
-
 
 class SmartDevice {
 protected:
     string name;
     bool status;
+    static int totalDevices;
 
 public:
-    SmartDevice(const string& name) : name(name), status(false) {}
+    SmartDevice(const string& name) : name(name), status(false) {
+        totalDevices++;
+    }
 
     SmartDevice& turnOn() {
         this->status = true;
@@ -33,15 +35,21 @@ public:
 
     string getName() const { return this->name; }
 
-    virtual ~SmartDevice() = default;
+    static int getTotalDevices() {
+        return totalDevices;
+    }
+
+    virtual ~SmartDevice() {
+        totalDevices--;
+    }
 };
 
+int SmartDevice::totalDevices = 0;
 
 class Light : public SmartDevice {
 public:
     Light(const string& name) : SmartDevice(name) {}
 };
-
 
 class Thermostat : public SmartDevice {
 private:
@@ -60,16 +68,18 @@ public:
     }
 };
 
-
 class Email {
 private:
     string subject;
     string body;
     bool read;
+    static int totalEmails;
 
 public:
     Email(const string& subject, const string& body)
-        : subject(subject), body(body), read(false) {}
+        : subject(subject), body(body), read(false) {
+        totalEmails++;
+    }
 
     void markAsRead() {
         this->read = true;
@@ -81,8 +91,17 @@ public:
     void showEmail() const {
         cout << "Subject: " << this->subject << "\nBody: " << this->body << "\nStatus: " << (this->read ? "Read" : "Unread") << "\n";
     }
+
+    static int getTotalEmails() {
+        return totalEmails;
+    }
+
+    ~Email() {
+        totalEmails--;
+    }
 };
 
+int Email::totalEmails = 0;
 
 class Reminder {
 private:
@@ -97,7 +116,6 @@ public:
         cout << "Reminder: " << this->message << " (Set at: " << ctime(&this->timeSet) << ")\n";
     }
 };
-
 
 class VirtualPersonalAssistant {
 private:
@@ -197,7 +215,6 @@ int main() {
         new Light("Kitchen Light")
     };
 
-    // Adding devices from the array to VirtualPersonalAssistant
     for (int i = 0; i < numDevices; ++i) {
         vpa.addDevice(deviceArray[i]);
     }
@@ -212,7 +229,7 @@ int main() {
         cout << "4. Exit\n";
         cout << "Enter your choice: ";
         cin >> choice;
-        cin.ignore(); 
+        cin.ignore();
 
         switch (choice) {
         case 1: {
@@ -229,7 +246,7 @@ int main() {
             getline(cin, name);
             cout << "Enter 1 to turn ON, 0 to turn OFF: ";
             cin >> turnOn;
-            cin.ignore(); 
+            cin.ignore();
             vpa.controlDevice(name, turnOn);
             break;
         }
