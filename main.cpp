@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <memory>
 #include <ctime>
 #include <algorithm> 
 
@@ -16,7 +15,6 @@ protected:
 public:
     SmartDevice(const string& name) : name(name), status(false) {}
 
-    
     SmartDevice& turnOn() {
         this->status = true;
         cout << this->name << " is now ON.\n";
@@ -43,6 +41,7 @@ class Light : public SmartDevice {
 public:
     Light(const string& name) : SmartDevice(name) {}
 };
+
 
 class Thermostat : public SmartDevice {
 private:
@@ -99,23 +98,37 @@ public:
     }
 };
 
+
 class VirtualPersonalAssistant {
 private:
-    vector<unique_ptr<SmartDevice>> devices;
-    vector<unique_ptr<Email>> emails;
-    vector<unique_ptr<Reminder>> reminders;
+    vector<SmartDevice*> devices;
+    vector<Email*> emails;
+    vector<Reminder*> reminders;
 
 public:
-    void addDevice(unique_ptr<SmartDevice> device) {
-        devices.push_back(move(device));
+    ~VirtualPersonalAssistant() {
+        for (auto device : devices) {
+            delete device;
+        }
+        for (auto email : emails) {
+            delete email;
+        }
+        for (auto reminder : reminders) {
+            delete reminder;
+        }
+    }
+
+    void addDevice(SmartDevice* device) {
+        devices.push_back(device);
     }
 
     void removeDevice(const string& name) {
         auto it = remove_if(devices.begin(), devices.end(),
-            [&name](const unique_ptr<SmartDevice>& device) {
+            [&name](SmartDevice* device) {
                 return device->getName() == name;
             });
         if (it != devices.end()) {
+            delete *it;
             devices.erase(it, devices.end());
             cout << name << " has been removed.\n";
         } else {
@@ -124,7 +137,7 @@ public:
     }
 
     void controlDevice(const string& name, bool turnOn) {
-        for (auto& device : devices) {
+        for (auto device : devices) {
             if (device->getName() == name) {
                 if (turnOn) {
                     device->turnOn();
@@ -137,12 +150,12 @@ public:
         cout << name << " not found.\n";
     }
 
-    void addEmail(unique_ptr<Email> email) {
-        emails.push_back(move(email));
+    void addEmail(Email* email) {
+        emails.push_back(email);
     }
 
-    void addReminder(unique_ptr<Reminder> reminder) {
-        reminders.push_back(move(reminder));
+    void addReminder(Reminder* reminder) {
+        reminders.push_back(reminder);
     }
 
     void showAllStatuses() const {
@@ -164,7 +177,7 @@ public:
     }
 
     void markEmailAsRead(const string& subject) {
-        for (auto& email : emails) {
+        for (auto email : emails) {
             if (email->getSubject() == subject) {
                 email->markAsRead();
                 return;
@@ -176,20 +189,27 @@ public:
 
 int main() {
     VirtualPersonalAssistant vpa;
+
+    const int numDevices = 3;
+    SmartDevice* deviceArray[numDevices] = {
+        new Light("Living Room Light"),
+        new Thermostat("Bedroom Thermostat", 22),
+        new Light("Kitchen Light")
+    };
+
+    // Adding devices from the array to VirtualPersonalAssistant
+    for (int i = 0; i < numDevices; ++i) {
+        vpa.addDevice(deviceArray[i]);
+    }
+
     int choice;
 
     do {
         cout << "\nVirtual Personal Assistant\n";
-        cout << "1. Add Device\n";
-        cout << "2. Remove Device\n";
-        cout << "3. Control Device\n";
-        cout << "4. Add Email\n";
-        cout << "5. Add Reminder\n";
-        cout << "6. Show All Device Statuses\n";
-        cout << "7. Show All Emails\n";
-        cout << "8. Show All Reminders\n";
-        cout << "9. Mark Email as Read\n";
-        cout << "10. Exit\n";
+        cout << "1. Remove Device\n";
+        cout << "2. Control Device\n";
+        cout << "3. Show All Device Statuses\n";
+        cout << "4. Exit\n";
         cout << "Enter your choice: ";
         cin >> choice;
         cin.ignore(); 
@@ -197,33 +217,12 @@ int main() {
         switch (choice) {
         case 1: {
             string name;
-            cout << "Enter device name: ";
-            getline(cin, name);
-            int type;
-            cout << "Enter 1 for Light, 2 for Thermostat: ";
-            cin >> type;
-            cin.ignore(); 
-            if (type == 1) {
-                vpa.addDevice(make_unique<Light>(name));
-            } else if (type == 2) {
-                int temp;
-                cout << "Enter initial temperature: ";
-                cin >> temp;
-                cin.ignore(); 
-                vpa.addDevice(make_unique<Thermostat>(name, temp));
-            } else {
-                cout << "Invalid device type.\n";
-            }
-            break;
-        }
-        case 2: {
-            string name;
             cout << "Enter device name to remove: ";
             getline(cin, name);
             vpa.removeDevice(name);
             break;
         }
-        case 3: {
+        case 2: {
             string name;
             bool turnOn;
             cout << "Enter device name: ";
@@ -234,47 +233,17 @@ int main() {
             vpa.controlDevice(name, turnOn);
             break;
         }
-        case 4: {
-            string subject, body;
-            cout << "Enter email subject: ";
-            getline(cin, subject);
-            cout << "Enter email body: ";
-            getline(cin, body);
-            vpa.addEmail(make_unique<Email>(subject, body));
-            break;
-        }
-        case 5: {
-            string message;
-            time_t now = time(nullptr);
-            cout << "Enter reminder message: ";
-            getline(cin, message);
-            vpa.addReminder(make_unique<Reminder>(message, now));
-            break;
-        }
-        case 6:
+        case 3:
             vpa.showAllStatuses();
             break;
-        case 7:
-            vpa.showAllEmails();
-            break;
-        case 8:
-            vpa.showAllReminders();
-            break;
-        case 9: {
-            string subject;
-            cout << "Enter email subject to mark as read: ";
-            getline(cin, subject);
-            vpa.markEmailAsRead(subject);
-            break;
-        }
-        case 10:
+        case 4:
             cout << "Exiting...\n";
             break;
         default:
             cout << "Invalid choice. Please try again.\n";
             break;
         }
-    } while (choice != 10);
+    } while (choice != 4);
 
     return 0;
 }
