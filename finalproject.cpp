@@ -7,9 +7,8 @@
 
 using namespace std;
 
-// Base class for smart devices
 class SmartDevice {
-protected:
+private:
     string name;
     bool status;
 
@@ -28,66 +27,53 @@ public:
         return *this;
     }
 
-    virtual void showStatus() const {
+    void showStatus() const {
         cout << this->name << " is " << (this->status ? "ON" : "OFF") << ".\n";
     }
 
     string getName() const { return this->name; }
-
-    virtual ~SmartDevice() = default;
 };
 
-// Derived class for Light
 class Light : public SmartDevice {
 public:
     Light(const string& name) : SmartDevice(name) {}
 };
 
-// Derived class for Thermostat
 class Thermostat : public SmartDevice {
 private:
-    int temperature; // Make temperature private
+    int temperature;
 
 public:
     Thermostat(const string& name, int temp) : SmartDevice(name), temperature(temp) {}
 
-    // Getter method for temperature
     int getTemperature() const {
         return this->temperature;
     }
 
-    // Setter method for temperature
     void setTemperature(int temp) {
         this->temperature = temp;
-        cout << this->name << " temperature set to " << this->temperature << " degrees.\n";
+        cout << this->getName() << " temperature set to " << this->temperature << " degrees.\n";
     }
 
     void showStatus() const override {
-        cout << this->name << " is " << (this->status ? "ON" : "OFF") << " and set to " << this->temperature << " degrees.\n";
+        cout << this->getName() << " is " << (this->status ? "ON" : "OFF") << " and set to " << this->temperature << " degrees.\n";
     }
 };
 
-// Class for managing emails
 class Email {
 private:
-    string subject; // Make subject private
-    string body;    // Make body private
-    bool read;      // Make read status private
+    string subject;
+    string body;
+    bool read;
 
 public:
     Email(const string& subject, const string& body)
         : subject(subject), body(body), read(false) {}
 
-    // Getter for subject
     string getSubject() const { return this->subject; }
-
-    // Getter for body
     string getBody() const { return this->body; }
-
-    // Getter for read status
     bool isRead() const { return this->read; }
 
-    // Setter to mark email as read
     void markAsRead() {
         this->read = true;
         cout << "Email \"" << this->subject << "\" marked as read.\n";
@@ -98,7 +84,6 @@ public:
     }
 };
 
-// Class for managing reminders
 class Reminder {
 private:
     string message;
@@ -113,7 +98,6 @@ public:
     }
 };
 
-// Main class for Virtual Personal Assistant
 class VirtualPersonalAssistant {
 private:
     vector<unique_ptr<SmartDevice>> devices;
@@ -192,7 +176,6 @@ public:
 int main() {
     VirtualPersonalAssistant vpa;
 
-    // Array of SmartDevice pointers
     const int numDevices = 3;
     unique_ptr<SmartDevice> deviceArray[numDevices] = {
         make_unique<Light>("Living Room Light"),
@@ -200,7 +183,6 @@ int main() {
         make_unique<Light>("Kitchen Light")
     };
 
-    // Adding devices from the array to VirtualPersonalAssistant
     for (int i = 0; i < numDevices; ++i) {
         vpa.addDevice(move(deviceArray[i]));
     }
@@ -215,7 +197,7 @@ int main() {
         cout << "4. Exit\n";
         cout << "Enter your choice: ";
         cin >> choice;
-        cin.ignore(); // Ignore newline character after choice input
+        cin.ignore(); 
 
         switch (choice) {
         case 1: {
@@ -232,7 +214,7 @@ int main() {
             getline(cin, name);
             cout << "Enter 1 to turn ON, 0 to turn OFF: ";
             cin >> turnOn;
-            cin.ignore(); // Ignore newline character after input
+            cin.ignore();
             vpa.controlDevice(name, turnOn);
             break;
         }
