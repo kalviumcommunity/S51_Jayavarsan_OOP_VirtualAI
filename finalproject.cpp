@@ -46,11 +46,17 @@ public:
 // Derived class for Thermostat
 class Thermostat : public SmartDevice {
 private:
-    int temperature;
+    int temperature; // Make temperature private
 
 public:
     Thermostat(const string& name, int temp) : SmartDevice(name), temperature(temp) {}
 
+    // Getter method for temperature
+    int getTemperature() const {
+        return this->temperature;
+    }
+
+    // Setter method for temperature
     void setTemperature(int temp) {
         this->temperature = temp;
         cout << this->name << " temperature set to " << this->temperature << " degrees.\n";
@@ -64,20 +70,28 @@ public:
 // Class for managing emails
 class Email {
 private:
-    string subject;
-    string body;
-    bool read;
+    string subject; // Make subject private
+    string body;    // Make body private
+    bool read;      // Make read status private
 
 public:
     Email(const string& subject, const string& body)
         : subject(subject), body(body), read(false) {}
 
+    // Getter for subject
+    string getSubject() const { return this->subject; }
+
+    // Getter for body
+    string getBody() const { return this->body; }
+
+    // Getter for read status
+    bool isRead() const { return this->read; }
+
+    // Setter to mark email as read
     void markAsRead() {
         this->read = true;
         cout << "Email \"" << this->subject << "\" marked as read.\n";
     }
-
-    string getSubject() const { return this->subject; }
 
     void showEmail() const {
         cout << "Subject: " << this->subject << "\nBody: " << this->body << "\nStatus: " << (this->read ? "Read" : "Unread") << "\n";
