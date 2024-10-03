@@ -17,21 +17,19 @@ public:
 
     SmartDevice& turnOn() {
         this->status = true;
-        cout << this->name << " is now ON.\n";
         return *this;
     }
 
     SmartDevice& turnOff() {
         this->status = false;
-        cout << this->name << " is now OFF.\n";
         return *this;
     }
 
-    void showStatus() const {
+    string getName() const { return this->name; }
+
+    virtual void showStatus() const {
         cout << this->name << " is " << (this->status ? "ON" : "OFF") << ".\n";
     }
-
-    string getName() const { return this->name; }
 };
 
 class Light : public SmartDevice {
@@ -52,7 +50,6 @@ public:
 
     void setTemperature(int temp) {
         this->temperature = temp;
-        cout << this->getName() << " temperature set to " << this->temperature << " degrees.\n";
     }
 
     void showStatus() const override {
@@ -71,12 +68,10 @@ public:
         : subject(subject), body(body), read(false) {}
 
     string getSubject() const { return this->subject; }
-    string getBody() const { return this->body; }
     bool isRead() const { return this->read; }
 
     void markAsRead() {
         this->read = true;
-        cout << "Email \"" << this->subject << "\" marked as read.\n";
     }
 
     void showEmail() const {
@@ -116,9 +111,6 @@ public:
             });
         if (it != devices.end()) {
             devices.erase(it, devices.end());
-            cout << name << " has been removed.\n";
-        } else {
-            cout << name << " not found.\n";
         }
     }
 
@@ -133,43 +125,12 @@ public:
                 return;
             }
         }
-        cout << name << " not found.\n";
-    }
-
-    void addEmail(unique_ptr<Email> email) {
-        emails.push_back(move(email));
-    }
-
-    void addReminder(unique_ptr<Reminder> reminder) {
-        reminders.push_back(move(reminder));
     }
 
     void showAllStatuses() const {
         for (const auto& device : devices) {
             device->showStatus();
         }
-    }
-
-    void showAllEmails() const {
-        for (const auto& email : emails) {
-            email->showEmail();
-        }
-    }
-
-    void showAllReminders() const {
-        for (const auto& reminder : reminders) {
-            reminder->showReminder();
-        }
-    }
-
-    void markEmailAsRead(const string& subject) {
-        for (auto& email : emails) {
-            if (email->getSubject() == subject) {
-                email->markAsRead();
-                return;
-            }
-        }
-        cout << "Email with subject \"" << subject << "\" not found.\n";
     }
 };
 
@@ -222,10 +183,8 @@ int main() {
             vpa.showAllStatuses();
             break;
         case 4:
-            cout << "Exiting...\n";
             break;
         default:
-            cout << "Invalid choice. Please try again.\n";
             break;
         }
     } while (choice != 4);
