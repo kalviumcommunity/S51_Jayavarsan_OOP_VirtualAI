@@ -3,7 +3,7 @@
 #include <string>
 #include <memory>
 #include <ctime>
-#include <algorithm> // For std::remove_if
+#include <algorithm> 
 
 using namespace std;
 
@@ -15,26 +15,30 @@ private:
 public:
     SmartDevice(const string& name) : name(name), status(false) {}
 
-    SmartDevice& turnOn() {
+    virtual ~SmartDevice() = default;
+
+    virtual SmartDevice& turnOn() {
         this->status = true;
         return *this;
     }
 
-    SmartDevice& turnOff() {
+    virtual SmartDevice& turnOff() {
         this->status = false;
         return *this;
     }
 
     string getName() const { return this->name; }
 
-    virtual void showStatus() const {
-        cout << this->name << " is " << (this->status ? "ON" : "OFF") << ".\n";
-    }
+    virtual void showStatus() const = 0;
 };
 
 class Light : public SmartDevice {
 public:
     Light(const string& name) : SmartDevice(name) {}
+
+    void showStatus() const override {
+        cout << getName() << " is " << (status ? "ON" : "OFF") << ".\n";
+    }
 };
 
 class Thermostat : public SmartDevice {
@@ -53,7 +57,7 @@ public:
     }
 
     void showStatus() const override {
-        cout << this->getName() << " is " << (this->status ? "ON" : "OFF") << " and set to " << this->temperature << " degrees.\n";
+        cout << getName() << " is " << (status ? "ON" : "OFF") << " and set to " << this->temperature << " degrees.\n";
     }
 };
 
