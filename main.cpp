@@ -8,35 +8,36 @@
 using namespace std;
 
 class SmartDevice {
-private:
+protected:
     string name;
     bool status;
 
 public:
     SmartDevice(const string& name) : name(name), status(false) {}
+    virtual ~SmartDevice() = default;
 
-    SmartDevice& turnOn() {
-        this->status = true;
+    virtual void turnOn() {
+        status = true;
         cout << name << " is now ON.\n";
-        return *this;
     }
 
-    SmartDevice& turnOff() {
-        this->status = false;
+    virtual void turnOff() {
+        status = false;
         cout << name << " is now OFF.\n";
-        return *this;
     }
 
-    string getName() const { return this->name; }
+    string getName() const { return name; }
 
-    void showStatus() const {
-        cout << name << " is " << (status ? "ON" : "OFF") << ".\n";
-    }
+    virtual void showStatus() const = 0; // Pure virtual function for polymorphism
 };
 
 class Light : public SmartDevice {
 public:
     Light(const string& name) : SmartDevice(name) {}
+
+    void showStatus() const override {
+        cout << name << " is " << (status ? "ON" : "OFF") << ".\n";
+    }
 };
 
 class Thermostat : public SmartDevice {
@@ -50,11 +51,11 @@ public:
 
     void setTemperature(int temp) {
         temperature = temp;
-        cout << getName() << " temperature set to " << temperature << " degrees.\n";
+        cout << name << " temperature set to " << temperature << " degrees.\n";
     }
 
-    void showStatus() const {
-        cout << getName() << " is " << (status ? "ON" : "OFF") << " and set to " << temperature << " degrees.\n";
+    void showStatus() const override {
+        cout << name << " is " << (status ? "ON" : "OFF") << " and set to " << temperature << " degrees.\n";
     }
 };
 
@@ -132,7 +133,7 @@ public:
 
     void showAllStatuses() const {
         for (const auto& device : devices) {
-            device->showStatus();
+            device->showStatus(); // Polymorphic call to showStatus
         }
     }
 };
