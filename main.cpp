@@ -7,9 +7,12 @@ class SmartDevice {
 protected:
     string name;
     bool status;
+    static int totalDevices;
 
 public:
-    SmartDevice(const string& name) : name(name), status(false) {}
+    SmartDevice(const string& name) : name(name), status(false) {
+        totalDevices++;
+    }
 
     void turnOn() {
         status = true;
@@ -24,7 +27,17 @@ public:
     void showStatus() const {
         cout << name << " is " << (status ? "ON" : "OFF") << ".\n";
     }
+
+    static int getTotalDevices() {
+        return totalDevices;
+    }
+
+    ~SmartDevice() {
+        totalDevices--;
+    }
 };
+
+int SmartDevice::totalDevices = 0;
 
 class Light : public SmartDevice {
 public:
@@ -35,29 +48,35 @@ public:
     }
 };
 
-int main() {
-    const int numLights = 3;  
-    Light livingRoomLight("Living Room Light");
-    Light kitchenLight("Kitchen Light");
-    Light bedroomLight("Bedroom Light");
+class Fan : public SmartDevice {
+public:
+    Fan(const string& name) : SmartDevice(name) {}
 
-    // Array of Light objects
-    Light lights[numLights] = {
-        livingRoomLight,
-        kitchenLight,
-        bedroomLight
+    void setSpeed(int speed) {
+        cout << name << " set to speed " << speed << ".\n";
+    }
+};
+
+int main() {
+    const int numDevices = 3;
+    SmartDevice* devices[numDevices] = {
+        new Light("Living Room Light"),
+        new Fan("Bedroom Fan"),
+        new Light("Kitchen Light")
     };
 
-    // Turn on all lights and show their status
-    for (int i = 0; i < numLights; ++i) {
-        lights[i].turnOn();
-        lights[i].showStatus();
+    for (int i = 0; i < numDevices; ++i) {
+        devices[i]->turnOn();
+        devices[i]->showStatus();
     }
 
-    // Dim the lights to a specific level
-    lights[0].dimLight(75);  
-    lights[1].dimLight(50);  
-    lights[2].dimLight(25);  
+    cout << "Total devices: " << SmartDevice::getTotalDevices() << "\n";
+
+    for (int i = 0; i < numDevices; ++i) {
+        delete devices[i];
+    }
+
+    cout << "Total devices after cleanup: " << SmartDevice::getTotalDevices() << "\n";
 
     return 0;
 }
