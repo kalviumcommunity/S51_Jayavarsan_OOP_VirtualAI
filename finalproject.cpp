@@ -47,8 +47,6 @@ private:
 public:
     Thermostat(const string& name, int temp) : SmartDevice(name), temperature(temp) {}
 
-    int getTemperature() const { return temperature; }
-
     void setTemperature(int temp) {
         temperature = temp;
         cout << name << " temperature set to " << temperature << " degrees.\n";
@@ -59,7 +57,7 @@ public:
     }
 };
 
-// New device type to demonstrate OCP
+// New device type to demonstrate LSP
 class Fan : public SmartDevice {
 public:
     Fan(const string& name) : SmartDevice(name) {}
