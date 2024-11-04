@@ -3,31 +3,30 @@
 #include <string>
 #include <memory>
 #include <ctime>
-#include <algorithm> 
+#include <algorithm>
 
 using namespace std;
 
 class SmartDevice {
-private:
+protected:
     string name;
     bool status;
 
 public:
     SmartDevice(const string& name) : name(name), status(false) {}
-
     virtual ~SmartDevice() = default;
 
-    virtual SmartDevice& turnOn() {
-        this->status = true;
-        return *this;
+    virtual void turnOn() {
+        status = true;
+        cout << name << " is now ON.\n";
     }
 
-    virtual SmartDevice& turnOff() {
-        this->status = false;
-        return *this;
+    virtual void turnOff() {
+        status = false;
+        cout << name << " is now OFF.\n";
     }
 
-    string getName() const { return this->name; }
+    string getName() const { return name; }
 
     virtual void showStatus() const = 0;
 };
@@ -37,7 +36,7 @@ public:
     Light(const string& name) : SmartDevice(name) {}
 
     void showStatus() const override {
-        cout << getName() << " is " << (status ? "ON" : "OFF") << ".\n";
+        cout << name << " is " << (status ? "ON" : "OFF") << ".\n";
     }
 };
 
@@ -48,16 +47,25 @@ private:
 public:
     Thermostat(const string& name, int temp) : SmartDevice(name), temperature(temp) {}
 
-    int getTemperature() const {
-        return this->temperature;
-    }
+    int getTemperature() const { return temperature; }
 
     void setTemperature(int temp) {
-        this->temperature = temp;
+        temperature = temp;
+        cout << name << " temperature set to " << temperature << " degrees.\n";
     }
 
     void showStatus() const override {
-        cout << getName() << " is " << (status ? "ON" : "OFF") << " and set to " << this->temperature << " degrees.\n";
+        cout << name << " is " << (status ? "ON" : "OFF") << " and set to " << temperature << " degrees.\n";
+    }
+};
+
+// New device type to demonstrate OCP
+class Fan : public SmartDevice {
+public:
+    Fan(const string& name) : SmartDevice(name) {}
+
+    void showStatus() const override {
+        cout << name << " is " << (status ? "ON" : "OFF") << ".\n";
     }
 };
 
@@ -68,18 +76,17 @@ private:
     bool read;
 
 public:
-    Email(const string& subject, const string& body)
-        : subject(subject), body(body), read(false) {}
+    Email(const string& subject, const string& body) : subject(subject), body(body), read(false) {}
 
-    string getSubject() const { return this->subject; }
-    bool isRead() const { return this->read; }
+    string getSubject() const { return subject; }
 
     void markAsRead() {
-        this->read = true;
+        read = true;
+        cout << "Email \"" << subject << "\" marked as read.\n";
     }
 
     void showEmail() const {
-        cout << "Subject: " << this->subject << "\nBody: " << this->body << "\nStatus: " << (this->read ? "Read" : "Unread") << "\n";
+        cout << "Subject: " << subject << "\nBody: " << body << "\nStatus: " << (read ? "Read" : "Unread") << "\n";
     }
 };
 
@@ -89,19 +96,16 @@ private:
     time_t timeSet;
 
 public:
-    Reminder(const string& message, time_t timeSet)
-        : message(message), timeSet(timeSet) {}
+    Reminder(const string& message, time_t timeSet) : message(message), timeSet(timeSet) {}
 
     void showReminder() const {
-        cout << "Reminder: " << this->message << " (Set at: " << ctime(&this->timeSet) << ")\n";
+        cout << "Reminder: " << message << " (Set at: " << ctime(&timeSet) << ")\n";
     }
 };
 
-class VirtualPersonalAssistant {
+class DeviceManager {
 private:
     vector<unique_ptr<SmartDevice>> devices;
-    vector<unique_ptr<Email>> emails;
-    vector<unique_ptr<Reminder>> reminders;
 
 public:
     void addDevice(unique_ptr<SmartDevice> device) {
@@ -115,6 +119,9 @@ public:
             });
         if (it != devices.end()) {
             devices.erase(it, devices.end());
+            cout << name << " has been removed.\n";
+        } else {
+            cout << name << " not found.\n";
         }
     }
 
@@ -129,6 +136,7 @@ public:
                 return;
             }
         }
+        cout << name << " not found.\n";
     }
 
     void showAllStatuses() const {
@@ -138,41 +146,65 @@ public:
     }
 };
 
-int main() {
-    VirtualPersonalAssistant vpa;
+class EmailManager {
+private:
+    vector<unique_ptr<Email>> emails;
 
-    const int numDevices = 3;
-    unique_ptr<SmartDevice> deviceArray[numDevices] = {
-        make_unique<Light>("Living Room Light"),
-        make_unique<Thermostat>("Bedroom Thermostat", 22),
-        make_unique<Light>("Kitchen Light")
-    };
-
-    for (int i = 0; i < numDevices; ++i) {
-        vpa.addDevice(move(deviceArray[i]));
+public:
+    void addEmail(unique_ptr<Email> email) {
+        emails.push_back(move(email));
     }
+
+    void showAllEmails() const {
+        for (const auto& email : emails) {
+            email->showEmail();
+        }
+    }
+};
+
+class ReminderManager {
+private:
+    vector<unique_ptr<Reminder>> reminders;
+
+public:
+    void addReminder(unique_ptr<Reminder> reminder) {
+        reminders.push_back(move(reminder));
+    }
+
+    void showAllReminders() const {
+        for (const auto& reminder : reminders) {
+            reminder->showReminder();
+        }
+    }
+};
+
+int main() {
+    DeviceManager deviceManager;
+    EmailManager emailManager;
+    ReminderManager reminderManager;
+
+    deviceManager.addDevice(make_unique<Light>("Living Room Light"));
+    deviceManager.addDevice(make_unique<Thermostat>("Bedroom Thermostat", 22));
+    deviceManager.addDevice(make_unique<Fan>("Ceiling Fan")); // New device added
+
+    emailManager.addEmail(make_unique<Email>("Meeting Reminder", "Don't forget the meeting at 10 AM."));
+    reminderManager.addReminder(make_unique<Reminder>("Take out the trash", time(nullptr)));
 
     int choice;
 
     do {
         cout << "\nVirtual Personal Assistant\n";
-        cout << "1. Remove Device\n";
-        cout << "2. Control Device\n";
-        cout << "3. Show All Device Statuses\n";
-        cout << "4. Exit\n";
+        cout << "1. Control Device\n";
+        cout << "2. Show All Device Statuses\n";
+        cout << "3. Show All Emails\n";
+        cout << "4. Show All Reminders\n";
+        cout << "5. Exit\n";
         cout << "Enter your choice: ";
         cin >> choice;
-        cin.ignore(); 
+        cin.ignore();
 
         switch (choice) {
         case 1: {
-            string name;
-            cout << "Enter device name to remove: ";
-            getline(cin, name);
-            vpa.removeDevice(name);
-            break;
-        }
-        case 2: {
             string name;
             bool turnOn;
             cout << "Enter device name: ";
@@ -180,18 +212,25 @@ int main() {
             cout << "Enter 1 to turn ON, 0 to turn OFF: ";
             cin >> turnOn;
             cin.ignore();
-            vpa.controlDevice(name, turnOn);
+            deviceManager.controlDevice(name, turnOn);
             break;
         }
+        case 2:
+            deviceManager.showAllStatuses();
+            break;
         case 3:
-            vpa.showAllStatuses();
+            emailManager.showAllEmails();
             break;
         case 4:
+            reminderManager.showAllReminders();
+            break;
+        case 5:
             break;
         default:
+            cout << "Invalid choice. Please try again.\n";
             break;
         }
-    } while (choice != 4);
+    } while (choice != 5);
 
     return 0;
 }
