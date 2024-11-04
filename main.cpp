@@ -28,7 +28,7 @@ public:
 
     string getName() const { return name; }
 
-    virtual void showStatus() const = 0; // Pure virtual function for polymorphism
+    virtual void showStatus() const = 0; // Pure virtual function, making this an abstract class
 };
 
 class Light : public SmartDevice {
